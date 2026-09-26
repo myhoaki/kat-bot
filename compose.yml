@@ -1,0 +1,10 @@
+services:
+  kat-bot:
+    build: .
+    container_name: kat-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./gifs:/app/gifs
+      - ./data:/app/data
