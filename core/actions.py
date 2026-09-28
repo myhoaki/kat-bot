@@ -4,6 +4,8 @@ import random
 import discord
 from discord.ext import commands
 
+from core.personality import random_reaction
+
 
 async def send_action(
     ctx: commands.Context,
@@ -15,8 +17,9 @@ async def send_action(
 
     if not os.path.exists(gif_folder):
         await ctx.send(
-            f"{ctx.author.mention} {message} "
-            "but this action doesn't have a GIF folder yet 😭"
+            f"{ctx.author.mention} {message}\n"
+            f"{random_reaction(action)}\n"
+            "But this action doesn't have a GIF folder yet 😭"
         )
         return
 
@@ -28,8 +31,9 @@ async def send_action(
 
     if not gifs:
         await ctx.send(
-            f"{ctx.author.mention} {message} "
-            "but I couldn't find any GIFs 😭"
+            f"{ctx.author.mention} {message}\n"
+            f"{random_reaction(action)}\n"
+            "But I couldn't find any GIFs 😭"
         )
         return
 
@@ -37,7 +41,10 @@ async def send_action(
     gif_path = os.path.join(gif_folder, gif)
 
     await ctx.send(
-        content=f"{ctx.author.mention} {message}",
+        content=(
+            f"{ctx.author.mention} {message}\n"
+            f"{random_reaction(action)}"
+        ),
         file=discord.File(
             gif_path,
             filename=gif,

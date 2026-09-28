@@ -17,15 +17,9 @@ class PersonalityCommands(commands.Cog):
 
     @commands.command()
     async def mood(self, ctx):
-        embed = discord.Embed(
-            title="🐱 Kat's Current Mood",
-            description=(
-                f"Kat is currently feeling "
-                f"**{random_mood()}**."
-            ),
+        await ctx.send(
+            f"🐱 I'm feeling **{random_mood()}**."
         )
-
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def roast(
@@ -34,8 +28,7 @@ class PersonalityCommands(commands.Cog):
         member: discord.Member,
     ):
         await ctx.send(
-            f"🔥 **Kat's Roast Department**\n"
-            f"{random_roast(member)}"
+            random_roast(member)
         )
 
     @commands.command()
@@ -45,8 +38,7 @@ class PersonalityCommands(commands.Cog):
         member: discord.Member,
     ):
         await ctx.send(
-            f"❤️ **Kat Has Something Nice To Say**\n"
-            f"{random_compliment(member)}"
+            random_compliment(member)
         )
 
     @commands.command()
@@ -56,23 +48,19 @@ class PersonalityCommands(commands.Cog):
         member: discord.Member,
     ):
         await ctx.send(
-            f"👩‍⚖️ **Kat's Official Judgment of "
-            f"{member.display_name}**\n"
             f"{random_judgment()}"
         )
 
     @commands.command()
     async def wisdom(self, ctx):
         await ctx.send(
-            f"🧠 **Kat's Wisdom**\n"
-            f"{random_wisdom()}"
+            random_wisdom()
         )
 
     @commands.command()
     async def chaos(self, ctx):
         await ctx.send(
-            f"💀 **CHAOS DEPARTMENT**\n"
-            f"{random_chaos()}"
+            random_chaos()
         )
 
 
