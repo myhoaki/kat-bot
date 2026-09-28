@@ -1,10 +1,10 @@
 {
     "1552941899164287016:219271535054028800": {
-        "romance": 16,
-        "friendship": 45,
-        "chemistry": 60,
-        "chaos": 72,
-        "kat_approval": 82
+        "romance": 25,
+        "friendship": 46,
+        "chemistry": 73,
+        "chaos": 100,
+        "kat_approval": 73
     },
     "151086985551937539:425892101130289182": {
         "romance": 47,
@@ -82,5 +82,12 @@
         "chemistry": 66,
         "chaos": 47,
         "kat_approval": 38
+    },
+    "151086985551937539:219271535054028800": {
+        "romance": 32,
+        "friendship": 25,
+        "chemistry": 77,
+        "chaos": 100,
+        "kat_approval": 46
     }
 }
