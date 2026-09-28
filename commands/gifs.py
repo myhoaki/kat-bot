@@ -1,12 +1,14 @@
 import os
 import re
 
+import discord
 from discord.ext import commands
 
 
-GIF_ROOT = "/app/gifs"
+GIF_FOLDER = "/app/gifs"
+MAX_FILE_SIZE = 8 * 1024 * 1024
 
-ALLOWED_ACTIONS = {
+ALLOWED_ACTIONS = (
     "hug",
     "kiss",
     "pat",
@@ -14,45 +16,57 @@ ALLOWED_ACTIONS = {
     "cuddle",
     "highfive",
     "preg",
-}
+)
 
-MAX_FILE_SIZE = 8 * 1024 * 1024  # 8 MB
-MAX_DISPLAYED_GIFS = 50
+MANAGER_ROLE = "Kat Manager"
 
 
-def get_next_filename(folder: str, action: str) -> str:
+def get_next_gif_number(folder):
+    """
+    Find the lowest available GIF number.
+
+    Example:
+        hug001.gif
+        hug002.gif
+        hug004.gif
+
+    The next upload becomes:
+        hug003.gif
+    """
+
+    os.makedirs(folder, exist_ok=True)
+
+    numbers = []
+
     pattern = re.compile(
-        rf"^{re.escape(action)}(\d+)\.gif$",
+        r"^.*?(\d+)\.gif$",
         re.IGNORECASE,
     )
 
-    used_numbers = set()
+    for filename in os.listdir(folder):
+        match = pattern.match(filename)
 
-    if os.path.isdir(folder):
-        for filename in os.listdir(folder):
-            match = pattern.match(filename)
-
-            if match:
-                used_numbers.add(
-                    int(match.group(1))
-                )
+        if match:
+            numbers.append(
+                int(match.group(1))
+            )
 
     number = 1
 
-    while number in used_numbers:
+    while number in numbers:
         number += 1
 
-    return f"{action}{number:03d}.gif"
+    return number
 
 
-def get_gif_files(folder: str) -> list[str]:
-    if not os.path.isdir(folder):
-        return []
+def has_manager_role(member: discord.Member) -> bool:
+    """
+    Check whether the user has the Kat Manager role.
+    """
 
-    return sorted(
-        filename
-        for filename in os.listdir(folder)
-        if filename.lower().endswith(".gif")
+    return any(
+        role.name == MANAGER_ROLE
+        for role in member.roles
     )
 
 
@@ -64,138 +78,154 @@ class GifCommands(commands.Cog):
     async def gifs(
         self,
         ctx,
-        action: str | None = None,
+        action: str = None,
     ):
-        # ?kat gifs
-        if action is None:
-            lines = [
-                "🐱 **Available GIF actions:**",
-                "",
-            ]
+        """
+        List available GIFs.
 
-            for name in sorted(ALLOWED_ACTIONS):
-                folder = os.path.join(
-                    GIF_ROOT,
-                    name,
+        ?kat gifs
+        ?kat gifs hug
+        """
+
+        if action:
+            action = action.lower()
+
+            if action not in ALLOWED_ACTIONS:
+                await ctx.send(
+                    f"Unknown action: **{action}**\n"
+                    f"Available actions: "
+                    f"{', '.join(ALLOWED_ACTIONS)}"
                 )
+                return
 
-                gif_count = len(
-                    get_gif_files(folder)
+            folder = os.path.join(
+                GIF_FOLDER,
+                action,
+            )
+
+            if not os.path.exists(folder):
+                await ctx.send(
+                    f"No GIF folder exists for "
+                    f"**{action}** yet."
                 )
+                return
 
+            gifs = sorted(
+                filename
+                for filename in os.listdir(folder)
+                if filename.lower().endswith(".gif")
+            )
+
+            if not gifs:
+                await ctx.send(
+                    f"No GIFs found for **{action}**."
+                )
+                return
+
+            lines = []
+
+            for index, filename in enumerate(
+                gifs,
+                start=1,
+            ):
                 lines.append(
-                    f"• **{name}** — {gif_count} GIF(s)"
+                    f"**{index}.** `{filename}`"
                 )
 
-            lines.extend(
-                (
-                    "",
-                    "Use `?kat gifs <action>` "
-                    "to see the GIFs.",
-                    "Example: `?kat gifs hug`",
+            await ctx.send(
+                f"🎬 **{action.upper()} GIFs**\n"
+                + "\n".join(lines)
+            )
+            return
+
+        lines = []
+
+        for action_name in ALLOWED_ACTIONS:
+            folder = os.path.join(
+                GIF_FOLDER,
+                action_name,
+            )
+
+            if not os.path.exists(folder):
+                count = 0
+            else:
+                count = sum(
+                    1
+                    for filename in os.listdir(folder)
+                    if filename.lower().endswith(".gif")
                 )
-            )
 
-            await ctx.send(
-                "\n".join(lines)
-            )
-            return
-
-        action = action.lower()
-
-        if action not in ALLOWED_ACTIONS:
-            await ctx.send(
-                "❌ Unknown GIF action.\n"
-                "Use `?kat gifs` to see the available actions."
-            )
-            return
-
-        folder = os.path.join(
-            GIF_ROOT,
-            action,
-        )
-
-        gifs = get_gif_files(folder)
-
-        if not gifs:
-            await ctx.send(
-                f"🐱 There are currently no GIFs "
-                f"for `{action}`."
-            )
-            return
-
-        displayed = gifs[
-            :MAX_DISPLAYED_GIFS
-        ]
-
-        lines = [
-            f"🐱 **{action.title()} GIFs ({len(gifs)})**",
-            "",
-        ]
-
-        for index, filename in enumerate(
-            displayed,
-            start=1,
-        ):
             lines.append(
-                f"`{index}.` {filename}"
-            )
-
-        if len(gifs) > MAX_DISPLAYED_GIFS:
-            lines.extend(
-                (
-                    "",
-                    f"...and {len(gifs) - MAX_DISPLAYED_GIFS} more.",
-                )
+                f"**{action_name}** — {count} GIF(s)"
             )
 
         await ctx.send(
-            "\n".join(lines)
+            "🎬 **Kat's GIF Library**\n"
+            + "\n".join(lines)
         )
 
     @commands.command(name="addgif")
-    @commands.has_guild_permissions(
-        manage_guild=True
-    )
     async def addgif(
         self,
         ctx,
         action: str,
     ):
+        """
+        Upload a GIF to an action.
+
+        Requires the Kat Manager role.
+        """
+
+        if not isinstance(
+            ctx.author,
+            discord.Member,
+        ):
+            return
+
+        if not has_manager_role(ctx.author):
+            await ctx.send(
+                f"{ctx.author.mention} "
+                "you need the **Kat Manager** role "
+                "to add GIFs. 🐱"
+            )
+            return
+
         action = action.lower()
 
         if action not in ALLOWED_ACTIONS:
             await ctx.send(
-                "❌ Unknown GIF action.\n"
-                "Use `?kat gifs` to see the available actions."
+                f"Unknown action: **{action}**\n"
+                f"Available actions: "
+                f"{', '.join(ALLOWED_ACTIONS)}"
             )
             return
 
         if not ctx.message.attachments:
             await ctx.send(
-                "📎 Attach a `.gif` to your message.\n"
-                f"Example: `?kat addgif {action}`"
+                "Attach a `.gif` file to the command. 😭"
             )
             return
 
         attachment = ctx.message.attachments[0]
-        filename = attachment.filename.lower()
 
-        if not filename.endswith(".gif"):
+        if not attachment.filename.lower().endswith(
+            ".gif"
+        ):
             await ctx.send(
-                "❌ I only accept `.gif` files."
+                "That isn't a GIF. "
+                "Kat refuses to accept your suspicious file. 💀"
             )
             return
 
         if attachment.size > MAX_FILE_SIZE:
             await ctx.send(
-                "❌ That GIF is too large.\n"
-                "The maximum size is **8 MB**."
+                "That GIF is too fucking large. 💀\n"
+                "Maximum size is **8 MB**."
             )
             return
 
         folder = os.path.join(
-            GIF_ROOT,
+            GIF_FOLDER,
             action,
         )
 
@@ -204,187 +234,122 @@ class GifCommands(commands.Cog):
             exist_ok=True,
         )
 
-        new_filename = get_next_filename(
-            folder,
-            action,
+        number = get_next_gif_number(
+            folder
         )
 
-        destination = os.path.join(
-            folder,
-            new_filename,
+        filename = (
+            f"{action}{number:03d}.gif"
         )
 
-        try:
-            # Save the GIF exactly as uploaded.
-            await attachment.save(
-                destination
-            )
-
-        except Exception as exc:
-            print(
-                f"Failed to save GIF: {exc}",
-                flush=True,
-            )
-
-            await ctx.send(
-                "❌ I couldn't save that GIF."
-            )
-            return
-
-        await ctx.send(
-            f"🐱 **GIF added!**\n"
-            f"Action: `{action}`\n"
-            f"File: `{new_filename}`"
-        )
-
-    @commands.command(name="removegif")
-    @commands.has_guild_permissions(
-        manage_guild=True
-    )
-    async def removegif(
-        self,
-        ctx,
-        action: str,
-        gif_number: int,
-    ):
-        action = action.lower()
-
-        if action not in ALLOWED_ACTIONS:
-            await ctx.send(
-                "❌ Unknown GIF action.\n"
-                "Use `?kat gifs` to see the available actions."
-            )
-            return
-
-        if gif_number < 1:
-            await ctx.send(
-                "❌ GIF number must be **1 or higher**."
-            )
-            return
-
-        folder = os.path.join(
-            GIF_ROOT,
-            action,
-        )
-
-        gifs = get_gif_files(folder)
-
-        if not gifs:
-            await ctx.send(
-                f"🐱 There are no GIFs for `{action}`."
-            )
-            return
-
-        if gif_number > len(gifs):
-            await ctx.send(
-                f"❌ GIF number `{gif_number}` "
-                f"doesn't exist.\n"
-                f"There are only **{len(gifs)}** GIF(s) "
-                f"for `{action}`."
-            )
-            return
-
-        filename = gifs[
-            gif_number - 1
-        ]
-
-        file_path = os.path.join(
+        filepath = os.path.join(
             folder,
             filename,
         )
 
         try:
-            os.remove(file_path)
+            await attachment.save(filepath)
 
-        except FileNotFoundError:
+        except (discord.HTTPException, OSError) as exc:
             await ctx.send(
-                "❌ That GIF no longer exists."
-            )
-            return
-
-        except OSError as exc:
-            print(
-                f"Failed to remove GIF: {exc}",
-                flush=True,
-            )
-
-            await ctx.send(
-                "❌ I couldn't remove that GIF."
+                "Kat couldn't save that GIF. 😭\n"
+                f"`{exc}`"
             )
             return
 
         await ctx.send(
-            f"🗑️ **GIF removed!**\n"
-            f"Action: `{action}`\n"
-            f"File: `{filename}`"
+            f"✅ Added `{filename}` to "
+            f"**{action}**."
         )
 
-    @addgif.error
-    async def addgif_error(
+    @commands.command(name="removegif")
+    async def removegif(
         self,
         ctx,
-        error,
+        action: str,
+        number: int,
     ):
-        if isinstance(
-            error,
-            commands.MissingPermissions,
+        """
+        Remove a GIF by its displayed list number.
+
+        Requires the Kat Manager role.
+        """
+
+        if not isinstance(
+            ctx.author,
+            discord.Member,
         ):
+            return
+
+        if not has_manager_role(ctx.author):
             await ctx.send(
-                "🔒 You need **Manage Server** "
-                "permission to add GIFs."
+                f"{ctx.author.mention} "
+                "you need the **Kat Manager** role "
+                "to remove GIFs. 🐱"
             )
             return
 
-        if isinstance(
-            error,
-            commands.MissingRequiredArgument,
-        ):
+        action = action.lower()
+
+        if action not in ALLOWED_ACTIONS:
             await ctx.send(
-                "📁 Tell me which action to add "
-                "the GIF to.\n"
-                "Example: `?kat addgif hug`"
+                f"Unknown action: **{action}**\n"
+                f"Available actions: "
+                f"{', '.join(ALLOWED_ACTIONS)}"
             )
             return
 
-        raise error
+        folder = os.path.join(
+            GIF_FOLDER,
+            action,
+        )
 
-    @removegif.error
-    async def removegif_error(
-        self,
-        ctx,
-        error,
-    ):
-        if isinstance(
-            error,
-            commands.MissingPermissions,
-        ):
+        if not os.path.exists(folder):
             await ctx.send(
-                "🔒 You need **Manage Server** "
-                "permission to remove GIFs."
+                f"No GIF folder exists for "
+                f"**{action}**."
             )
             return
 
-        if isinstance(
-            error,
-            commands.MissingRequiredArgument,
-        ):
+        gifs = sorted(
+            filename
+            for filename in os.listdir(folder)
+            if filename.lower().endswith(".gif")
+        )
+
+        if not gifs:
             await ctx.send(
-                "🗑️ Tell me the action and GIF number.\n"
-                "Example: `?kat removegif hug 3`"
+                f"No GIFs found for **{action}**."
             )
             return
 
-        if isinstance(
-            error,
-            commands.BadArgument,
-        ):
+        if number < 1 or number > len(gifs):
             await ctx.send(
-                "❌ GIF number must be a number.\n"
-                "Example: `?kat removegif hug 3`"
+                f"Invalid GIF number. "
+                f"Choose between **1** and **{len(gifs)}**."
             )
             return
 
-        raise error
+        filename = gifs[number - 1]
+        filepath = os.path.join(
+            folder,
+            filename,
+        )
+
+        try:
+            os.remove(filepath)
+
+        except OSError as exc:
+            await ctx.send(
+                "Kat couldn't remove that GIF. 😭\n"
+                f"`{exc}`"
+            )
+            return
+
+        await ctx.send(
+            f"🗑️ Removed `{filename}` from "
+            f"**{action}**."
+        )
 
 
 async def setup(bot):
