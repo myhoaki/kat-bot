@@ -34,6 +34,7 @@ async def load_extensions():
         "commands.personality",
         "commands.automatic",
         "commands.gifs",
+        "commands.ocr",
     )
 
     for extension in extensions:
