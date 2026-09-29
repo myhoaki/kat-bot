@@ -8,3 +8,10 @@ services:
     volumes:
       - ./gifs:/app/gifs
       - ./data:/app/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import os; os.kill(1, 0)\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
