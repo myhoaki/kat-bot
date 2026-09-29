@@ -15,25 +15,15 @@ class HelpCommands(commands.Cog):
                 " Kat Bot Commands "
                 "<:giga_mpreg:1512315959279353986>"
             ),
-            description=(
-                "What are you up to?\n\n"
-                "🐱 Kat is watching. Choose wisely."
-            ),
+            description="🐱 Kat is watching. Choose wisely.",
             color=discord.Color.blurple(),
         )
 
         embed.add_field(
             name="🐾 Interactions",
             value=(
-                "`?kat hug @member`\n"
-                "`?kat kiss @member`\n"
-                "`?kat pat @member`\n"
-                "`?kat slap @member`\n"
-                "`?kat cuddle @member`\n"
-                "`?kat highfive @member`\n"
-                "`?kat preg @member`\n\n"
-                "Kat will respond with a random reaction "
-                "and GIF."
+                "`?kat hug @member` `kiss` `pat` `slap`\n"
+                "`cuddle` `highfive` `preg`"
             ),
             inline=False,
         )
@@ -49,14 +39,10 @@ class HelpCommands(commands.Cog):
         )
 
         embed.add_field(
-            name="🎭 Kat's Personality",
+            name="🎭 Personality",
             value=(
-                "`?kat mood`\n"
-                "`?kat roast @user`\n"
-                "`?kat compliment @user`\n"
-                "`?kat judge @user`\n"
-                "`?kat wisdom`\n"
-                "`?kat chaos`"
+                "`?kat mood` `roast @user` `compliment @user`\n"
+                "`?kat judge @user` `wisdom` `chaos`"
             ),
             inline=False,
         )
@@ -64,22 +50,24 @@ class HelpCommands(commands.Cog):
         embed.add_field(
             name="🎮 Games",
             value=(
-                "`?kat coinflip`\n"
-                "`?kat 8ball <question>`\n"
-                "`?kat roll [count] [sides]`\n\n"
-                "Roll up to 10 dice with up to 100 sides."
+                "`?kat coinflip` `8ball <question>`\n"
+                "`?kat roll [count] [sides]`"
+            ),
+            inline=False,
+        )
+
+        embed.add_field(
+            name="🤖 AI & OCR",
+            value=(
+                "**AI:** Mention Kat + your message to chat with AI.\n"
+                "**OCR:** Attach an image + `?kat ocr`"
             ),
             inline=False,
         )
 
         embed.add_field(
             name="🎞️ GIFs",
-            value=(
-                "`?kat gifs`\n"
-                "`?kat gifs <action>`\n\n"
-                "See available GIF categories and the GIFs "
-                "currently loaded for each action."
-            ),
+            value="`?kat gifs` `?kat gifs <action>`",
             inline=False,
         )
 
@@ -87,28 +75,14 @@ class HelpCommands(commands.Cog):
             name="🛠️ GIF Management",
             value=(
                 "`?kat addgif <action>`\n"
-                "`?kat removegif <action> <number>`\n\n"
-                "Attach a `.gif` when using `addgif`.\n"
-                "Manage Server permission is required.\n"
-                "New GIFs are automatically numbered like "
-                "`hug001.gif`, `hug002.gif`, etc.\n"
-                "Removed numbers can be reused automatically."
+                "`?kat removegif <action> <number>`"
             ),
             inline=False,
         )
 
         embed.add_field(
-            name="<:giga_mpreg:1512315959279353986> Automatic Reactions",
-            value=(
-                "Kat may randomly react to certain words "
-                "or phrases in normal conversation. 👀\n\n"
-            ),
-            inline=False,
-        )
-
-        embed.add_field(
-            name="⚙️ Other",
-            value="`?kat help`",
+            name="👀 Automatic",
+            value="Kat may randomly react to certain words or phrases.",
             inline=False,
         )
 
