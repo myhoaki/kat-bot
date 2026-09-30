@@ -1,32 +1,24 @@
-# 🐱 Kat-Bot
+# Kat-Bot
 
-**Kat-Bot** is a small, self-hosted Discord bot built to bring a little chaos and personality to the server.
+Kat-Bot is a small, self-hosted Discord bot built for a private Discord community.
 
-Designed as a fun personal bot, Kat-Bot provides a collection of custom commands, interactive features, data-driven functionality, and GIFs designed specifically for a private Discord community.
+## Features
 
-### ✨ Features
+- Custom Discord commands
+- Multiple AI personalities
+- GIF-based interactions
+- Modular command system
+- Local data storage
+- Docker and Docker Compose support
 
-- 🤖 Custom Discord bot commands
-- 🐱 Funny personality and interactions
-- 🎬 GIF and media-based responses
-- ⚙️ Modular command system
-- 💾 Local data storage
-- 🐳 Docker support for easy self-hosting
-- 🔧 Simple Python-based setup
-- 🏠 Designed for private/community Discord servers
-
-Kat-Bot is intentionally lightweight and personal rather than being an all-in-one public Discord bot. It's essentially a **custom Discord gremlin that lives on the homelab and entertains the server**.
-
-### 🛠️ Tech Stack
+## Tech Stack
 
 - Python
 - Discord API
 - Docker / Docker Compose
-- Custom command modules
-- Local persistent data
 
-### 🚀 Self-Hosted
+## Self-Hosted
 
-Kat-Bot can be run independently on a home server using Docker, making it a natural addition to a self-hosted homelab.
+Kat-Bot is designed to run on a home server or homelab using Docker.
 
-> **A small Discord bot with one important mission: cause a reasonable amount of chaos. 🐱**
+> A small Discord bot built to cause a reasonable amount of chaos.

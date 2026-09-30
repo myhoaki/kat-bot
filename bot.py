@@ -29,12 +29,10 @@ async def load_extensions():
     extensions = (
         "commands.actions",
         "commands.games",
-        "commands.relationships",
         "commands.help",
-        "commands.personality",
-        "commands.automatic",
+        "commands.aipersonality",
         "commands.gifs",
-        "commands.ocr",
+        "commands.ai",
     )
 
     for extension in extensions:

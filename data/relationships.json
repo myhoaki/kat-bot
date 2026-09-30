@@ -85,9 +85,23 @@
     },
     "151086985551937539:219271535054028800": {
         "romance": 32,
-        "friendship": 25,
-        "chemistry": 77,
+        "friendship": 30,
+        "chemistry": 87,
         "chaos": 100,
-        "kat_approval": 46
+        "kat_approval": 48
+    },
+    "151086985551937539:441051618604089374": {
+        "romance": 60,
+        "friendship": 77,
+        "chemistry": 65,
+        "chaos": 76,
+        "kat_approval": 32
+    },
+    "151086985551937539:1552941899164287016": {
+        "romance": 94,
+        "friendship": 60,
+        "chemistry": 23,
+        "chaos": 68,
+        "kat_approval": 36
     }
 }
