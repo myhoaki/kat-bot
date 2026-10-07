@@ -2,15 +2,13 @@
 
 A small, self-hosted Discord bot built for a private Discord community.
 
-Kat-Bot combines custom Discord commands, AI personalities, GIF interactions, and Gemini-powered text-to-speech into one modular bot.
+Kat-Bot combines custom Discord commands, AI personalities, GIF interactions, games, and utility commands into one modular bot.
 
 ## Features
 
 - Custom Discord commands
 - Multiple AI personalities
 - Personality-aware AI responses
-- Personality-aware Gemini TTS voices
-- Japanese TTS translation with `-jp`
 - GIF-based interactions
 - Games and utility commands
 - Modular command system
@@ -72,22 +70,6 @@ onee-san
 tsundere
 yandere
 ```
-
-### TTS
-
-Generate speech using Kat's current personality voice:
-
-```text
-?kat say <text>
-```
-
-Translate the text to Japanese before generating speech:
-
-```text
-?kat say <text> -jp
-```
-
-The selected AI personality determines the TTS voice and speaking style.
 
 ### GIFs
 
@@ -177,31 +159,7 @@ Example:
 ```env
 DISCORD_TOKEN=your_discord_bot_token
 GEMINI_API_KEY=your_gemini_api_key
-
-GEMINI_TTS_KEY_1=your_gemini_tts_key
-GEMINI_TTS_KEY_2=your_gemini_tts_key
-GEMINI_TTS_KEY_3=your_gemini_tts_key
 ```
-
-Additional TTS keys can be added using the same naming pattern:
-
-```env
-GEMINI_TTS_KEY_4=your_gemini_tts_key
-GEMINI_TTS_KEY_5=your_gemini_tts_key
-```
-
-Kat-Bot checks the configured TTS keys and can fall back to another configured key when a request fails due to quota or rate limits.
-
-### Environment Variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `DISCORD_TOKEN` | Yes | Discord bot authentication token |
-| `GEMINI_API_KEY` | Yes | Gemini API key used by AI features |
-| `GEMINI_TTS_KEY_1` | Yes | Primary Gemini TTS API key |
-| `GEMINI_TTS_KEY_2` | No | Additional TTS fallback key |
-| `GEMINI_TTS_KEY_3` | No | Additional TTS fallback key |
-| `GEMINI_TTS_KEY_N` | No | Additional TTS fallback keys |
 
 **Never commit `.env` to Git.**
 
@@ -246,7 +204,7 @@ docker compose build
 docker compose up -d
 ```
 
-The bot stores persistent files through Docker bind mounts.
+The bot stores persistent files through Docker bind mounts:
 
 ```text
 gifs/  → /app/gifs
@@ -264,19 +222,19 @@ kat-bot/
 ├── README.md
 │
 ├── commands/
+│   ├── __init__.py
 │   ├── actions.py
 │   ├── aipersonality.py
 │   ├── ai.py
 │   ├── games.py
 │   ├── gifs.py
-│   ├── help.py
-│   └── tts.py
+│   └── help.py
 │
 ├── core/
+│   ├── __init__.py
 │   ├── actions.py
 │   ├── ai.py
-│   ├── aipersonalities.py
-│   └── tts.py
+│   └── aipersonalities.py
 │
 ├── gifs/
 │   └── ...
@@ -289,11 +247,9 @@ kat-bot/
 
 Kat-Bot supports several AI personalities that change how Kat responds.
 
-Each personality can also have its own TTS voice and speaking style.
-
 The current personalities are:
 
-- **Butcher** — rough, cynical, sarcastic
+- **Butcher** — rough, cynical, and sarcastic
 - **Normal** — friendly and conversational
 - **Tsundere** — youthful and flustered
 - **Yandere** — calm and unsettling
@@ -302,6 +258,8 @@ The current personalities are:
 - **Chuunibyou** — dramatic and theatrical
 - **Onee-san** — warm and confident
 - **Gyaru** — energetic and playful
+
+The selected personality is stored in memory and resets to the default personality when the bot restarts.
 
 ## Security
 
@@ -321,12 +279,6 @@ Run a syntax check before rebuilding:
 
 ```bash
 python -m py_compile bot.py
-```
-
-For the TTS modules:
-
-```bash
-python -m py_compile commands/tts.py core/tts.py
 ```
 
 Check the Git working tree:
