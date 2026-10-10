@@ -7,7 +7,7 @@ from google.genai import types
 from core.aipersonalities import get_system_prompt
 
 
-AI_COOLDOWN_SECONDS = 15
+AI_COOLDOWN_SECONDS = 5
 
 last_ai_reply = {}
 
