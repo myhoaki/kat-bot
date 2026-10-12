@@ -33,7 +33,6 @@ async def load_extensions():
         "commands.aipersonality",
         "commands.gifs",
         "commands.ai",
-        "commands.tts",
     )
 
     for extension in extensions:

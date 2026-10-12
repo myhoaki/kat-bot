@@ -40,15 +40,6 @@ class HelpCommands(commands.Cog):
             ),
             inline=False,
         )
-
-        embed.add_field(
-            name="TTS",
-            value=(
-                "`?kat say <text>`\n"
-                "`?kat say <text> -jp`"
-            ),
-            inline=False,
-        )
         
         embed.add_field(
         name="GIFs",

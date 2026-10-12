@@ -1,6 +1,7 @@
 import random
 import re
 import time
+import discord
 
 CHANNEL_COOLDOWN = 30
 USER_COOLDOWN = 60
@@ -10,13 +11,13 @@ last_channel_reaction = {}
 last_user_reaction = {}
 
 EMOTES = {
-    r"\b(sus|suspicious|theor(y|ise|ize)|explain|how does that work)\b":
-        "<:MonkaThink:1337409772177330197>",
-    r"\b(awkward|cringe|embarrassing|yikes|painful|secondhand embarrassment)\b":
+    r"\b(right|tho|screaming|poor|suppress)\b":
+        "<:T1emosigh:1415634313017425942>",
+    r"\b(old|outdated|idk|no idea|clueless|back then|i remember|philosophy)\b":
         "<:worryOld:1491473285014097930>",
-    r"\b(wtf|what the hell|no way|insane|unbelievable)\b":
+    r"\b(w(tf|th|df)|no way|insane|how could)\b":
         "<:MonkaGiga:945541709159337984>",
-    r"\b(yikes|oh no|concerned|worry|uncomfortable|disaster)\b":
+    r"\b(yikes|oh no|uh oh|concerned|worry)\b":
         "<:WorrySweat:956031327348617266>",
 }
 
@@ -49,7 +50,7 @@ async def maybe_react(message, own_bot_id, partner_bot_id):
         return
 
     try:
-        await message.add_reaction(random.choice(candidates))
+        await message.add_reaction(discord.PartialEmoji.from_str(random.choice(candidates)))
     except Exception as exc:
         print(f"[Reactions] Failed to react: {exc}", flush=True)
         return

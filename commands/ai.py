@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from core.reactions import maybe_react
+from core.stickers import maybe_send_sticker
 
 from core.ai import (
     can_use_ai,
@@ -30,6 +31,11 @@ class AI(commands.Cog):
     async def on_message(self, message):
         if self.bot.user is not None:
             await maybe_react(
+                message,
+                self.bot.user.id,
+                self.ANI_BOT_ID,
+            )
+            await maybe_send_sticker(
                 message,
                 self.bot.user.id,
                 self.ANI_BOT_ID,
