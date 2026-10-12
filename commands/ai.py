@@ -6,6 +6,8 @@ import time
 import discord
 from discord.ext import commands
 
+from core.reactions import maybe_react
+
 from core.ai import (
     can_use_ai,
     get_ai_reply,
@@ -26,6 +28,13 @@ class AI(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if self.bot.user is not None:
+            await maybe_react(
+                message,
+                self.bot.user.id,
+                self.ANI_BOT_ID,
+            )
+
         is_ani = (
             message.author.bot
             and message.author.id == self.ANI_BOT_ID

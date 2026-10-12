@@ -14,7 +14,7 @@ EMOTES = {
         "<:MonkaThink:1337409772177330197>",
     r"\b(awkward|cringe|embarrassing|yikes|painful|secondhand embarrassment)\b":
         "<:worryOld:1491473285014097930>",
-    r"\b(wtf|what the hell|no way|insane|unbelievable\b":
+    r"\b(wtf|what the hell|no way|insane|unbelievable)\b":
         "<:MonkaGiga:945541709159337984>",
     r"\b(yikes|oh no|concerned|worry|uncomfortable|disaster)\b":
         "<:WorrySweat:956031327348617266>",
