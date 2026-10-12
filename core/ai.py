@@ -5,10 +5,16 @@ import time
 from google import genai
 from google.genai import types
 
+from core.config import (
+    AI_COOLDOWN_SECONDS,
+    GEMINI_API_KEY,
+    GEMINI_MODEL,
+    GEMINI_MAX_OUTPUT_TOKENS,
+    MAX_MEMORY_MESSAGES,
+    MAX_MEMORY_CHARS,
+)
 from core.aipersonalities import get_system_prompt
 
-
-AI_COOLDOWN_SECONDS = 5
 
 last_ai_reply = {}
 
@@ -16,9 +22,6 @@ last_ai_reply = {}
 # Key: Discord channel ID
 # Value: list of recent "username: message" strings
 conversation_memory = {}
-
-MAX_MEMORY_MESSAGES = 10
-MAX_MEMORY_CHARS = 4000
 
 
 
@@ -46,9 +49,7 @@ def get_ai_reply(
     channel_id: int | None = None,
     username: str = "User",
 ):
-    api_key = os.getenv(
-        "GEMINI_API_KEY"
-    )
+    api_key = GEMINI_API_KEY
 
     if not api_key:
         print(
@@ -85,11 +86,11 @@ def get_ai_reply(
         )
 
         response = client.models.generate_content(
-            model="gemini-3.5-flash-lite",
+            model=GEMINI_MODEL,
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=get_system_prompt(),
-                max_output_tokens=500,
+                max_output_tokens=GEMINI_MAX_OUTPUT_TOKENS,
             ),
         )
 

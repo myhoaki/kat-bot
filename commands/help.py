@@ -36,7 +36,7 @@ class HelpCommands(commands.Cog):
             value=(
                 "`Mention Kat Bot + your message`\n"
                 "`?kat personality`\n"
-                "`?kat personality <name>`"
+                "`?kat personality <name>`\n"
             ),
             inline=False,
         )

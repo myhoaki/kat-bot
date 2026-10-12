@@ -1,12 +1,9 @@
-import os
+import asyncio
 
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 
-load_dotenv()
-
-TOKEN = os.getenv("DISCORD_TOKEN")
+from core.config import DISCORD_TOKEN
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -40,14 +37,9 @@ async def load_extensions():
         print(f"Loaded: {extension}", flush=True)
 
 async def main():
-    if not TOKEN:
-        raise RuntimeError(
-            "DISCORD_TOKEN is not set in .env"
-        )
-
     async with bot:
         await load_extensions()
-        await bot.start(TOKEN)
+        await bot.start(DISCORD_TOKEN)
 
 
 import asyncio
