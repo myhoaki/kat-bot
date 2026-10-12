@@ -101,7 +101,7 @@ Remove a GIF:
 
 Before installing Kat-Bot, make sure you have:
 
-- Python 3.12 or newer
+- Python 3.12 or newer (for running outside Docker)
 - Docker
 - Docker Compose
 - A Discord bot application
@@ -150,18 +150,44 @@ docker compose logs -f kat-bot
 
 ## Configuration
 
-Kat-Bot uses environment variables for API credentials and other configuration.
+Kat-Bot uses environment variables for API credentials and runtime configuration.
 
-Create a `.env` file in the project directory.
+Create a `.env` file in the project directory using `.env.example` as a template.
 
 Example:
 
 ```env
+# Discord bot token
 DISCORD_TOKEN=your_discord_bot_token
+
+# Gemini API key for AI responses
 GEMINI_API_KEY=your_gemini_api_key
+
+# Gemini text model
+GEMINI_MODEL=gemini-3.5-flash-lite
+
+# Maximum generated response length
+GEMINI_MAX_OUTPUT_TOKENS=500
+
+# Minimum time between AI replies from the same user, in seconds
+AI_COOLDOWN_SECONDS=5
+
+# In-memory conversation history limits
+MAX_MEMORY_MESSAGES=10
+MAX_MEMORY_CHARS=4000
 ```
 
-**Never commit `.env` to Git.**
+| Variable | Description | Default |
+|---|---|---|
+| `DISCORD_TOKEN` | Discord bot token; required | None |
+| `GEMINI_API_KEY` | Gemini API key for AI responses | Empty |
+| `GEMINI_MODEL` | Gemini text model | `gemini-3.5-flash-lite` |
+| `GEMINI_MAX_OUTPUT_TOKENS` | Maximum generated response tokens | `500` |
+| `AI_COOLDOWN_SECONDS` | AI response cooldown per user, in seconds | `5` |
+| `MAX_MEMORY_MESSAGES` | Maximum conversation history messages | `10` |
+| `MAX_MEMORY_CHARS` | Maximum conversation history characters | `4000` |
+
+**Never commit `.env` to Git.** The `.env.example` file contains placeholders and can safely be committed.
 
 ## Docker
 
@@ -211,36 +237,45 @@ gifs/  → /app/gifs
 data/  → /app/data
 ```
 
+The `gifs/` directory stores GIF assets. The `data/` directory is mounted for application data.
+
 ## Project Structure
 
 ```text
 kat-bot/
-├── bot.py
+├── .env.example
+├── .gitignore
 ├── Dockerfile
-├── docker-compose.yml
+├── compose.yml
 ├── requirements.txt
+├── services.yaml
 ├── README.md
+├── bot.py
 │
 ├── commands/
 │   ├── __init__.py
 │   ├── actions.py
-│   ├── aipersonality.py
 │   ├── ai.py
+│   ├── aipersonality.py
 │   ├── games.py
 │   ├── gifs.py
-│   └── help.py
+│   └── tts.py
 │
 ├── core/
 │   ├── __init__.py
 │   ├── actions.py
 │   ├── ai.py
-│   └── aipersonalities.py
+│   ├── aipersonalities.py
+│   ├── config.py
+│   ├── reactions.py
+│   ├── stickers.py
+│   └── tts.py
 │
 ├── gifs/
 │   └── ...
 │
 └── data/
-    └── ...
+    └── ... (runtime data)
 ```
 
 ## AI Personalities
@@ -281,18 +316,23 @@ Run a syntax check before rebuilding:
 python -m py_compile bot.py
 ```
 
-Check the Git working tree:
+After making code changes, rebuild and restart the container:
 
 ```bash
-git status
+docker compose build
+docker compose up -d
+```
+
+Check the logs for errors:
+
+```bash
+docker compose logs --tail=100 kat-bot
 ```
 
 ## License
 
-This project is intended for personal and private self-hosting.
+This project is intended for private self-hosting. Make sure you have permission to use any third-party assets, including GIFs and audio files, that you add to your own instance.
 
-## About
+---
 
-Kat-Bot is a small Discord bot built for a private community.
-
-> A small Discord bot built to cause a reasonable amount of chaos.
+*A small Discord bot built to cause a reasonable amount of chaos.*
